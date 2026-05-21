@@ -1,0 +1,6 @@
+# Nginx configuration
+# Reverse proxy setup:
+# - Serve Next.js static files
+# - Proxy /api/* to backend
+# - Gzip compression
+# See nginx.conf for full configuration

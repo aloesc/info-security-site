@@ -1,0 +1,42 @@
+# Multi-stage build for Next.js frontend
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# Copy root package-lock (monorepo)
+COPY package.json package-lock.json ./
+COPY backend/package.json ./backend/
+COPY frontend/package.json ./frontend/
+
+# Install deps for frontend workspace using lock file
+RUN npm ci --workspace=frontend
+
+# Copy frontend source
+COPY frontend/ ./frontend/
+
+# Build Next.js
+WORKDIR /app/frontend
+ENV NEXT_TELEMETRY_DISABLED=1
+RUN npm run build
+
+# Production stage
+FROM node:20-alpine AS runner
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3000
+
+# Next 15 standalone output puts nested 'frontend' subdir due to workspace name
+# Copy the ENTIRE standalone tree including node_modules
+COPY --from=builder /app/frontend/.next/standalone ./
+COPY --from=builder /app/frontend/.next/static ./frontend/.next/static
+COPY --from=builder /app/frontend/public ./frontend/public
+
+# The server.js lives inside the workspace-named subdir
+WORKDIR /app/frontend
+
+EXPOSE 3000
+
+CMD ["node", "server.js"]

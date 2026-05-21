@@ -1,0 +1,13 @@
+# This is an example environment file — copy to .env and set real values
+# NEVER commit .env to version control
+
+# Database configuration
+DATABASE_PATH=./db/app.db
+
+# Auth secrets (change in production to strong random values)
+SESSION_SECRET=dummy_secret_change_me
+JWT_SECRET=change-me-in-production-jwt-secret-key-2024-min-8-chars
+
+# Server configuration
+PORT=3001
+NODE_ENV=development

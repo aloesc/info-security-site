@@ -1,0 +1,3 @@
+// Mini-games logic
+// Phishing Detective, Password Fortress, Session Defender
+// Each game in its own folder with core.ts (pure functions) and index.tsx (UI)

@@ -1,0 +1,26 @@
+{
+  "name": "info-security-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Interactive cybersecurity learning platform — securing social media accounts",
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev --workspace=backend\" \"npm run dev --workspace=frontend\"",
+    "build": "npm run build --workspace=frontend && npm run build --workspace=backend",
+    "test": "npm run test --workspace=backend && npm run test --workspace=frontend",
+    "lint": "npm run lint --workspace=backend && npm run lint --workspace=frontend",
+    "format": "prettier --write \"**/*.ts\" \"**/*.tsx\" \"**/*.json\" \"**/*.css\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0",
+    "prettier": "^3.3.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "author": "",
+  "license": "MIT"
+}

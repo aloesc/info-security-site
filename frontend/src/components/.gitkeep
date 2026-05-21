@@ -1,0 +1,2 @@
+// Reusable React components
+// Each component in its own folder: index.tsx + types.ts + styles

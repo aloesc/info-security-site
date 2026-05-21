@@ -1,0 +1,3 @@
+-- SQLite database directory
+-- The actual database file will be created at runtime
+-- Path: ./db/app.db (configured via DATABASE_PATH env var)

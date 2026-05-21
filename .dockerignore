@@ -1,0 +1,42 @@
+# Dependencies
+node_modules
+*/node_modules/
+
+# Build outputs
+.next
+*/.next
+dist
+*/dist
+
+# Environment
+.env
+.env.*
+!.env-example.txt
+
+# Database
+*.db
+backend/db/*.db
+
+# Logs
+*.log
+
+# Temporary
+.tmp
+tmp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git
+.gitignore
+
+# Docs
+*.md
+!README.md
+
+# Misc
+.cache
+*.pdf
+model.pdf
