@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { generateSessions, calculateScore, getGrade, Session } from './logic';
 import SessionList from './SessionList';
 import GameTimer from './Timer';
+import { submitScore } from '@/lib/api';
 import { fadeInUp } from '@/lib/animations';
 
 const MAX_TIME = 60;
@@ -121,12 +122,7 @@ export default function SessionGame() {
       const roundScore = calculateScore(closedSuspicious, missedSuspicious, closedLegitimate, state.timeLeft);
       const totalScore = state.score + roundScore;
 
-      const userId = localStorage.getItem('user_id') || 'anonymous';
-      fetch('/api/games/scores', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: userId, game_type: 'session', score: totalScore }),
-      }).catch(() => {});
+      submitScore('session', totalScore).catch(() => {});
     }
   }, [state.isGameOver]);
 

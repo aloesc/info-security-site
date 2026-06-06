@@ -12,6 +12,7 @@ import {
 } from './logic';
 import StrengthMeter from './StrengthMeter';
 import CrackingTimeDisplay from './CrackingTimeDisplay';
+import { submitScore } from '@/lib/api';
 import { fadeInUp } from '@/lib/animations';
 
 const MAX_LEVELS = 5;
@@ -51,12 +52,7 @@ export default function PasswordGame() {
         setFinalScore(score);
         setGameOver(true);
 
-        const userId = localStorage.getItem('user_id') || 'anonymous';
-        fetch('/api/games/scores', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ user_id: userId, game_type: 'password', score }),
-        }).catch(() => {});
+        submitScore('password', score).catch(() => {});
       }
     }
   }, [strength.level, password, level, gameOver, startTime]);

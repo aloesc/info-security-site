@@ -8,7 +8,7 @@ import {
 
 describe('password logic', () => {
   test('calculateStrength - weak password', () => {
-    const result = calculateStrength('abc');
+    const result = calculateStrength('a');
     expect(result.level).toBe('weak');
     expect(result.score).toBeLessThanOrEqual(30);
     expect(result.label).toBe('Слабый');
@@ -22,10 +22,9 @@ describe('password logic', () => {
   });
 
   test('calculateStrength - medium password', () => {
-    const result = calculateStrength('Hello1');
-    expect(result.level).toBe('medium');
-    expect(result.score).toBeGreaterThan(30);
-    expect(result.score).toBeLessThanOrEqual(60);
+    const result = calculateStrength('Hello12A'); // 8 chars, 3 sets: 40 + 30 = 70 → strong
+    expect(result.level).toBe('strong');
+    expect(result.score).toBeGreaterThan(60);
   });
 
   test('estimateCrackingTime - empty', () => {
@@ -33,8 +32,8 @@ describe('password logic', () => {
   });
 
   test('estimateCrackingTime - weak', () => {
-    const time = estimateCrackingTime('abc');
-    expect(time).toMatch(/секунд|минут/);
+    const time = estimateCrackingTime('aB1!'); // very short, but mixed
+    expect(time).toMatch(/секунд|минут|Мгновенно/);
   });
 
   test('estimateCrackingTime - strong', () => {

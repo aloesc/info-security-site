@@ -7,7 +7,7 @@ import { useAuth } from '@/providers/AuthProvider';
 
 const NAV_LINKS = [
   { href: '/', label: 'Главная' },
-  { href: '/games', label: 'Игры' },
+  { href: '/games/phishing', label: 'Игры' },
   { href: '/leaderboard', label: 'Таблица лидеров' },
 ];
 

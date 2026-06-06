@@ -9,10 +9,11 @@ COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
 
 # Install deps for frontend workspace using lock file
-RUN npm ci --workspace=frontend
+RUN npm ci --workspace=frontend --foreground-scripts
 
 # Copy frontend source
 COPY frontend/ ./frontend/
+RUN mkdir -p ./frontend/public
 
 # Build Next.js
 WORKDIR /app/frontend

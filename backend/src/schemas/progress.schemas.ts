@@ -7,7 +7,7 @@ export const ProgressUpdateSchema = z.object({
 });
 
 export const ProgressResponseSchema = z.object({
-  user_id: z.string(),
+  user_id: z.number().int(),
   completed_guides: z.array(z.string()),
   achievements: z.array(z.string()),
   updated_at: z.string(),

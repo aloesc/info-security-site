@@ -10,7 +10,11 @@ export const createScore = (db: DbConnection) => (req: Request, res: Response): 
     return;
   }
 
-  const userId = req.auth?.username || req.body.user_id || 'anonymous';
+  if (!req.auth) {
+    res.status(401).json({ error: 'Unauthorized' });
+    return;
+  }
+  const userId = Number(req.auth.userId);
 
   try {
     const row = gamesService.saveScore(db, { ...parseResult.data, user_id: userId });

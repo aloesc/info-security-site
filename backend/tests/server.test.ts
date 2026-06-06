@@ -10,12 +10,15 @@ jest.mock('../src/middleware/logger', () => ({
   },
 }));
 
+const TEST_JWT_SECRET = 'test-secret-test-secret-test-secret-32-chars';
+
 describe('Server', () => {
   let server: Server;
   let address: string;
   let db: Database;
 
   beforeAll((done) => {
+    process.env.JWT_SECRET = TEST_JWT_SECRET;
     db = new Database(':memory:');
     runMigrations(db);
 
@@ -45,9 +48,10 @@ describe('Server', () => {
     });
   });
 
-  describe('GET /api/games?game_type=phishing', () => {
+  describe('GET /api/games/scores?game_type=...', () => {
     it('should return empty leaderboard initially', async () => {
-      const res = await fetch(`${address}/api/games?game_type=phishing`);
+      const ts = Date.now();
+      const res = await fetch(`${address}/api/games/scores?game_type=server-test-${ts}`);
       expect(res.status).toBe(200);
       const body = await res.json();
       expect(Array.isArray(body)).toBe(true);

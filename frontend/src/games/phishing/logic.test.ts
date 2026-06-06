@@ -9,7 +9,7 @@ describe('phishing logic', () => {
       timeLeft: 10,
     }));
     const score = calculateScore(answers);
-    expect(score).toBe(1200); // 10*100 + 10*10*2 = 1200, clamped to 1000
+    expect(score).toBe(1000); // 10*100 + 10*10*2 = 1200, clamped to 1000
     expect(score).toBeLessThanOrEqual(1000);
   });
 
@@ -32,7 +32,7 @@ describe('phishing logic', () => {
       { roundId: 1, correct: false, timeLeft: 2 },
       { roundId: 2, correct: true, timeLeft: 12 },
     ];
-    expect(calculateScore(answers)).toBe(240); // 2*100 + (8+2+12)*2 = 200 + 44 = 244
+    expect(calculateScore(answers)).toBe(244); // 2*100 + (8+2+12)*2 = 200 + 44 = 244
   });
 
   test('formatTime', () => {

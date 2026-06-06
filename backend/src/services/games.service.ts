@@ -3,7 +3,7 @@ import type { ScoreResponse } from '../schemas/games.schemas';
 
 export const saveScore = (
   db: DbConnection,
-  params: { user_id: string; game_type: string; score: number }
+  params: { user_id: number; game_type: string; score: number }
 ): ScoreResponse => {
   const stmt = db.prepare(
     'INSERT INTO scores (user_id, game_type, score, timestamp) VALUES (?, ?, ?, ?) RETURNING *'
@@ -20,7 +20,7 @@ export const getLeaderboard = (
   const stmt = db.prepare(`
     SELECT s.*, u.username, COALESCE(u.display_name, u.username) as display_name
     FROM scores s
-    LEFT JOIN users u ON s.user_id = u.username
+    LEFT JOIN users u ON s.user_id = u.id
     WHERE s.game_type = ?
     ORDER BY s.score DESC
     LIMIT ?

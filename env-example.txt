@@ -5,9 +5,9 @@
 DATABASE_PATH=./db/app.db
 
 # Auth secrets (change in production to strong random values)
-SESSION_SECRET=dummy_secret_change_me
-JWT_SECRET=change-me-in-production-jwt-secret-key-2024-min-8-chars
+# Generate with: openssl rand -hex 32
+JWT_SECRET=change-me-in-production-jwt-secret-key-2024
 
 # Server configuration
-PORT=3001
+PORT=4000
 NODE_ENV=development

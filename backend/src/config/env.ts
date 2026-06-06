@@ -3,9 +3,9 @@ import { z } from 'zod';
 const envSchema = z.object({
   PORT: z.string().default('4000').transform(Number),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
-  DATABASE_PATH: z.string().min(1),
-  SESSION_SECRET: z.string().min(1),
-  JWT_SECRET: z.string().min(8).default('change-me-in-production-jwt-secret-key-2024'),
+  DATABASE_PATH: z.string().min(1).default('./db/app.db'),
+  JWT_SECRET: z.string().min(16, 'JWT_SECRET must be at least 16 characters'),
+  SESSION_SECRET: z.string().min(1).optional(),
 });
 
 export type Env = z.infer<typeof envSchema>;

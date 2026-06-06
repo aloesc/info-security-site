@@ -11,7 +11,7 @@ export const LeaderboardRequestSchema = z.object({
 
 export const ScoreResponseSchema = z.object({
   id: z.number().int(),
-  user_id: z.string(),
+  user_id: z.number().int(),
   game_type: z.string(),
   score: z.number().int(),
   timestamp: z.string(),

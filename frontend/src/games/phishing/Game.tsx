@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { PHISHING_DATA } from './data';
 import { calculateScore, formatTime } from './logic';
 import { QuestionCard, TimerBar, ResultScreen } from './GameUI';
+import { submitScore } from '@/lib/api';
 import { staggerContainer } from '@/lib/animations';
 
 interface GameState {
@@ -101,13 +102,8 @@ export default function PhishingGame() {
   useEffect(() => {
     if (state.isGameOver && state.answers.length > 0) {
       const score = calculateScore(state.answers);
-      const userId = localStorage.getItem('user_id') || 'anonymous';
-      fetch('/api/games/scores', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: userId, game_type: 'phishing', score }),
-      }).catch(() => {
-        // silent fail - offline mode
+      submitScore('phishing', score).catch(() => {
+        // silent fail — offline mode or not logged in
       });
     }
   }, [state.isGameOver]);

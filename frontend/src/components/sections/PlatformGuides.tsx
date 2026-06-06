@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Check, Shield, Smartphone, Globe } from 'lucide-react';
+import { ChevronDown, Check, Shield, Smartphone, MessageCircle } from 'lucide-react';
 import { fadeInUp, staggerContainer } from '@/lib/animations';
 
 interface Step {
@@ -46,16 +46,17 @@ const PLATFORMS: PlatformData[] = [
     ],
   },
   {
-    id: 'instagram',
-    name: 'Instagram',
-    icon: <Globe className="h-5 w-5" />,
+    id: 'max',
+    name: 'Max',
+    icon: <MessageCircle className="h-5 w-5" />,
     steps: [
-      { id: 'ig-1', label: 'Включите двухфакторную аутентификацию' },
-      { id: 'ig-2', label: 'Проверьте список авторизованных приложений' },
-      { id: 'ig-3', label: 'Используйте сложный уникальный пароль' },
-      { id: 'ig-4', label: 'Будьте осторожны с сообщениями «от спонсоров» и фишинга' },
-      { id: 'ig-5', label: 'Не переходите по ссылкам в Direct от незнакомцев' },
-      { id: 'ig-6', label: 'Регулярно просматривайте список активных сеансов' },
+      { id: 'mx-1', label: 'Привяжите номер телефона и email для восстановления доступа' },
+      { id: 'mx-2', label: 'Включите двухфакторную аутентификацию: Настройки → Безопасность → 2FA' },
+      { id: 'mx-3', label: 'Завершите незнакомые сеансы в разделе «Устройства»' },
+      { id: 'mx-4', label: 'Задайте код-пароль или биометрию для входа в приложение' },
+      { id: 'mx-5', label: 'Скройте номер телефона в настройках конфиденциальности' },
+      { id: 'mx-6', label: 'Не открывайте ссылки в чатах от незнакомцев и подозрительных групп' },
+      { id: 'mx-7', label: 'Не пересылайте коды из SMS и push-уведомлений другим людям' },
     ],
   },
 ];
@@ -207,7 +208,7 @@ export default function PlatformGuides() {
             Инструкция по платформам
           </h2>
           <p className="mt-3 text-slate-400">
-            Пошаговые меры защиты для Telegram, ВКонтакте и Instagram.
+            Пошаговые меры защиты для Telegram, ВКонтакте и Max.
           </p>
         </motion.div>
 

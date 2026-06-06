@@ -1,17 +1,18 @@
--- Game scores table
+-- Game scores table — user_id stores users.id as INTEGER
 CREATE TABLE IF NOT EXISTS scores (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  user_id TEXT NOT NULL,
+  user_id INTEGER NOT NULL,
   game_type TEXT NOT NULL,
   score INTEGER NOT NULL,
   timestamp TEXT NOT NULL
 );
+CREATE INDEX IF NOT EXISTS idx_scores_game_type_score ON scores (game_type, score DESC);
+CREATE INDEX IF NOT EXISTS idx_scores_user_id ON scores (user_id);
 
--- User progress table
--- completed_guides and achievements are stored as JSON arrays in TEXT fields
+-- User progress table — completed_guides/achievements stored as JSON arrays in TEXT
 CREATE TABLE IF NOT EXISTS progress (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  user_id TEXT NOT NULL UNIQUE,
+  user_id INTEGER NOT NULL UNIQUE,
   completed_guides TEXT,
   achievements TEXT,
   updated_at TEXT NOT NULL

@@ -1,4 +1,5 @@
 import express, { Request, Response } from 'express';
+import helmet from 'helmet';
 import type { DbConnection } from './db/connection';
 import { parseEnv } from './config/env';
 import { logger } from './middleware/logger';
@@ -13,6 +14,7 @@ import { runMigrations } from './db/migrate';
 export function createApp(db: DbConnection) {
   const app = express();
 
+  app.use(helmet());
   app.use(corsMiddleware);
   app.use(express.json({ limit: '10kb' }));
 

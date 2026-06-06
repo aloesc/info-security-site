@@ -15,8 +15,11 @@ export function calculateStrength(password: string): StrengthResult {
   if (/\d/.test(password)) charSets++;
   if (/[^a-zA-Z0-9]/.test(password)) charSets++;
 
-  const raw = length * 4 + charSets * 25;
-  const score = Math.min(100, raw);
+  // 0–10 chars: 0–40; +length factor; +charSets factor; -penalties for short
+  const lengthScore = Math.min(60, length * 5);
+  const diversityScore = (charSets - 1) * 15; // 0 / 15 / 30 / 45
+  const raw = lengthScore + diversityScore;
+  const score = Math.max(0, Math.min(100, raw));
 
   if (score <= 30) return { level: 'weak', score, color: 'bg-cyber-red', label: 'Слабый' };
   if (score <= 60) return { level: 'medium', score, color: 'bg-yellow-500', label: 'Средний' };
@@ -34,7 +37,7 @@ export function estimateCrackingTime(password: string): string {
   if (pool === 0) return 'Мгновенно';
 
   const combinations = Math.pow(pool, password.length);
-  const rate = 1e9; // guesses per second
+  const rate = 1e6; // guesses per second (offline attack)
   const seconds = combinations / rate;
 
   if (seconds < 1) return 'Мгновенно';
@@ -52,7 +55,7 @@ export function calculateGameScore(
   strengthIndex: number,
   speedBonus: number
 ): number {
-  return Math.min(1000, level * 100 + strengthIndex * 50 + speedBonus);
+  return Math.min(1000, level * 100 + strengthIndex * 5 + speedBonus);
 }
 
 export function getLevelTarget(level: number): { requiredLevel: StrengthLevel; hint: string } {

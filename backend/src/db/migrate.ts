@@ -2,7 +2,13 @@ import fs from 'fs';
 import path from 'path';
 import type { DbConnection } from './connection';
 
-const SCHEMA_PATH = path.join(__dirname, 'schema.sql');
+const SCHEMA_CANDIDATES = [
+  path.join(__dirname, 'schema.sql'),
+  path.join(__dirname, '..', 'db', 'schema.sql'),
+  path.join(__dirname, 'db', 'schema.sql'),
+  path.join(process.cwd(), 'src', 'db', 'schema.sql'),
+  path.join(process.cwd(), 'db', 'schema.sql'),
+];
 
 /**
  * Pure helper that checks whether the required tables already exist.
@@ -27,6 +33,12 @@ export const runMigrations = (db: DbConnection): void => {
     return;
   }
 
-  const schema = fs.readFileSync(SCHEMA_PATH, 'utf-8');
+  const schemaPath = SCHEMA_CANDIDATES.find((p) => fs.existsSync(p));
+  if (!schemaPath) {
+    throw new Error(
+      `schema.sql not found. Searched in: ${SCHEMA_CANDIDATES.join(', ')}`
+    );
+  }
+  const schema = fs.readFileSync(schemaPath, 'utf-8');
   db.exec(schema);
 };

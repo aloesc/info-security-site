@@ -15,6 +15,14 @@ export interface TokenPayload {
   username: string;
 }
 
+const getJwtSecret = (): string => {
+  const secret = process.env.JWT_SECRET;
+  if (!secret || secret.length < 16) {
+    throw new Error('JWT_SECRET is missing or too short (min 16 chars)');
+  }
+  return secret;
+};
+
 export async function createUser(
   db: DbConnection,
   input: RegisterInput
@@ -31,7 +39,7 @@ export async function createUser(
   );
   const row = stmt.get(input.username, displayName, input.email, passwordHash, now, now) as User;
 
-  const token = jwt.sign({ userId: row.id, username: row.username }, process.env.JWT_SECRET || '', {
+  const token = jwt.sign({ userId: row.id, username: row.username }, getJwtSecret(), {
     expiresIn: '7d',
   });
 
@@ -53,7 +61,7 @@ export async function verifyUser(
 
   const { password_hash: _, ...user } = row;
 
-  const token = jwt.sign({ userId: user.id, username: user.username }, process.env.JWT_SECRET || '', {
+  const token = jwt.sign({ userId: user.id, username: user.username }, getJwtSecret(), {
     expiresIn: '7d',
   });
 
@@ -61,5 +69,5 @@ export async function verifyUser(
 }
 
 export function verifyToken(token: string): TokenPayload {
-  return jwt.verify(token, process.env.JWT_SECRET || '') as TokenPayload;
+  return jwt.verify(token, getJwtSecret()) as TokenPayload;
 }

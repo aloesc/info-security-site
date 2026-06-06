@@ -26,7 +26,7 @@ describe('session logic', () => {
 
   test('calculateScore - mixed', () => {
     const score = calculateScore(3, 2, 1, 30);
-    expect(score).toBe(305); // 300 - 150 + 150 = 300? wait: 3*100 = 300; penalty = (2+1)*50 = 150; time = 30*5 = 150; total = 300
+    // 3*100 = 300; penalty = (2+1)*50 = 150; time = 30*5 = 150; total = 300
     expect(score).toBe(300);
   });
 

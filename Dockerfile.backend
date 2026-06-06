@@ -9,7 +9,7 @@ COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
 
 # Install deps for backend workspace using lock file
-RUN npm ci --workspace=backend
+RUN npm ci --workspace=backend --foreground-scripts
 
 # Copy backend source
 COPY backend/ ./backend/
@@ -25,11 +25,14 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=4000
 
-# Copy compiled output and dependencies
+# Copy compiled output, schema and dependencies
 COPY --from=builder /app/backend/dist ./dist
-COPY --from=builder /app/backend/src/db/schema.sql ./dist/db/
+COPY --from=builder /app/backend/src/db/schema.sql ./dist/db/schema.sql
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/backend/package.json ./
+
+# Create persistent directory for SQLite database
+RUN mkdir -p /app/db
 
 EXPOSE 4000
 
