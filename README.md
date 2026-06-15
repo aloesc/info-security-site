@@ -6,7 +6,7 @@
 
 - **Frontend**: Next.js 15 + TypeScript + Tailwind CSS + Framer Motion
 - **Backend**: Express.js + TypeScript + better-sqlite3 + Zod + JWT
-- **Инфраструктура**: Nginx (reverse proxy) + Docker Compose
+- **Инфраструктура**: Caddy (reverse proxy + авто-HTTPS) + Docker Compose
 
 ## Мини-игры
 
@@ -24,13 +24,16 @@ cp env-example.txt .env
 
 # 2. Сгенерировать сильный JWT_SECRET
 echo "JWT_SECRET=$(openssl rand -hex 32)" >> .env
+
+# 3. Указать домен
+echo "DOMAIN=example.com" >> .env
 # (или просто отредактируйте .env вручную)
 
-# 3. Запустить
+# 4. Запустить
 docker compose up -d --build
 
-# 4. Открыть
-open http://localhost
+# 5. Открыть
+open https://example.com
 ```
 
 ### Вариант 2. Локальная разработка
@@ -58,9 +61,9 @@ npm run format
 
 После запуска:
 
-- Главная: <http://localhost> (Docker) или <http://localhost:3000> (dev)
-- API health: <http://localhost/api/health>
-- Leaderboard: <http://localhost/leaderboard>
+- Главная: <https://example.com>
+- API health: <https://example.com/api/health>
+- Leaderboard: <https://example.com/leaderboard>
 
 ## Структура проекта
 
