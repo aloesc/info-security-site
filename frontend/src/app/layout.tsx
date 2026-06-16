@@ -22,7 +22,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ru" className={`${inter.variable} dark`}>
-      <body className="min-h-screen bg-cyber-black text-slate-100 antialiased">
+      <body className="min-h-screen overflow-x-hidden bg-cyber-black text-slate-100 antialiased">
         <ClientProviders>{children}</ClientProviders>
       </body>
     </html>
