@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Timer, AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
 import { Round } from './data';
@@ -116,6 +117,13 @@ export function ResultScreen({
           <XCircle className="h-4 w-4" />
           Играть снова
         </button>
+
+        <Link
+          href="/"
+          className="mt-3 inline-flex items-center justify-center rounded-lg border border-cyber-card px-6 py-3 text-sm font-semibold text-slate-200 transition-colors hover:bg-cyber-card/60"
+        >
+          В главное меню
+        </Link>
       </div>
     </motion.div>
   );

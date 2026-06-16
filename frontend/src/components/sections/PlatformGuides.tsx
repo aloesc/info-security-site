@@ -172,21 +172,30 @@ function PlatformAccordion({ platform, checkedSteps, onToggle, isExpanded, onExp
 
 export default function PlatformGuides() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [checkedSteps, setCheckedSteps] = useState<Set<string>>(new Set());
+  const [checkedStepsByPlatform, setCheckedStepsByPlatform] = useState<Record<string, Set<string>>>({
+    telegram: new Set(),
+    vk: new Set(),
+    max: new Set(),
+  });
 
   const toggleExpanded = (id: string) => {
     setExpandedId((prev) => (prev === id ? null : id));
   };
 
-  const toggleStep = (stepId: string) => {
-    setCheckedSteps((prev) => {
-      const next = new Set(prev);
-      if (next.has(stepId)) {
-        next.delete(stepId);
+  const toggleStep = (platformId: string, stepId: string) => {
+    setCheckedStepsByPlatform((prev) => {
+      const nextPlatformSteps = new Set(prev[platformId] ?? []);
+
+      if (nextPlatformSteps.has(stepId)) {
+        nextPlatformSteps.delete(stepId);
       } else {
-        next.add(stepId);
+        nextPlatformSteps.add(stepId);
       }
-      return next;
+
+      return {
+        ...prev,
+        [platformId]: nextPlatformSteps,
+      };
     });
   };
 
@@ -217,8 +226,8 @@ export default function PlatformGuides() {
             <PlatformAccordion
               key={platform.id}
               platform={platform}
-              checkedSteps={checkedSteps}
-              onToggle={toggleStep}
+              checkedSteps={checkedStepsByPlatform[platform.id] ?? new Set()}
+              onToggle={(stepId) => toggleStep(platform.id, stepId)}
               isExpanded={expandedId === platform.id}
               onExpand={() => toggleExpanded(platform.id)}
             />

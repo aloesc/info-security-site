@@ -7,6 +7,37 @@ export interface StrengthResult {
   label: string;
 }
 
+export interface PasswordProfile {
+  length: number;
+  hasLowercase: boolean;
+  hasUppercase: boolean;
+  hasDigit: boolean;
+  hasSymbol: boolean;
+  digitCount: number;
+  symbolCount: number;
+  wordCount: number;
+}
+
+export function getPasswordProfile(password: string): PasswordProfile {
+  const digitMatches = password.match(/\d/g) ?? [];
+  const symbolMatches = password.match(/[^a-zA-Z0-9\s]/g) ?? [];
+  const wordCount = password
+    .trim()
+    .split(/[\s-]+/)
+    .filter(Boolean).length;
+
+  return {
+    length: password.length,
+    hasLowercase: /[a-z]/.test(password),
+    hasUppercase: /[A-Z]/.test(password),
+    hasDigit: /\d/.test(password),
+    hasSymbol: /[^a-zA-Z0-9]/.test(password),
+    digitCount: digitMatches.length,
+    symbolCount: symbolMatches.length,
+    wordCount,
+  };
+}
+
 export function calculateStrength(password: string): StrengthResult {
   const length = password.length;
   let charSets = 0;
@@ -60,23 +91,51 @@ export function calculateGameScore(
 
 export function getLevelTarget(level: number): { requiredLevel: StrengthLevel; hint: string } {
   const targets: Record<number, { requiredLevel: StrengthLevel; hint: string }> = {
-    1: { requiredLevel: 'medium', hint: 'Добавьте цифры и символы, чтобы достичь среднего уровня.' },
-    2: { requiredLevel: 'medium', hint: 'Используйте длину > 8 символов и разные регистры.' },
-    3: { requiredLevel: 'strong', hint: 'Пароль должен быть > 12 символов со всеми типами символов.' },
-    4: { requiredLevel: 'strong', hint: 'Используйте passphrase — несколько случайных слов с символами.' },
-    5: { requiredLevel: 'unbreakable', hint: 'Максимальная защита: длина > 16, все наборы символов.' },
+    1: { requiredLevel: 'medium', hint: '8+ символов, все типы символов, без лишней простоты.' },
+    2: { requiredLevel: 'medium', hint: '10+ символов и минимум 2 цифры.' },
+    3: { requiredLevel: 'strong', hint: '12+ символов, минимум 2 цифры и 2 спецсимвола.' },
+    4: { requiredLevel: 'strong', hint: '14+ символов, все типы символов, 2+ цифры и 2+ спецсимвола.' },
+    5: { requiredLevel: 'unbreakable', hint: '16+ символов, 3+ цифры, 3+ спецсимвола или passphrase из 4 фрагментов.' },
   };
   return targets[level] || targets[5];
 }
 
-export function getPasswordTips(password: string): string[] {
+export function meetsLevelTarget(password: string, level: number): boolean {
+  const profile = getPasswordProfile(password);
+  const hasAllTypes = profile.hasLowercase && profile.hasUppercase && profile.hasDigit && profile.hasSymbol;
+  const hasEnoughLength = (min: number) => profile.length >= min;
+  const hasSegments = (min: number) => profile.wordCount >= min;
+
+  switch (level) {
+    case 1:
+      return hasEnoughLength(8) && hasAllTypes;
+    case 2:
+      return hasEnoughLength(10) && hasAllTypes && profile.digitCount >= 2;
+    case 3:
+      return hasEnoughLength(12) && hasAllTypes && profile.digitCount >= 2 && profile.symbolCount >= 2;
+    case 4:
+      return hasEnoughLength(14) && hasAllTypes && profile.digitCount >= 2 && profile.symbolCount >= 2;
+    case 5:
+    default:
+      return (
+        (hasEnoughLength(16) && hasAllTypes && profile.digitCount >= 3 && profile.symbolCount >= 3) ||
+        (hasEnoughLength(16) && hasSegments(4) && hasAllTypes)
+      );
+  }
+}
+
+export function getPasswordTips(password: string, level = 1): string[] {
   const tips: string[] = [];
-  if (password.length < 8) tips.push('Слишком короткий. Минимум 8 символов.');
-  if (password.length < 12) tips.push('Для сильного пароля используйте 12+ символов.');
+  const minLength = level === 1 ? 8 : level === 2 ? 10 : level === 3 ? 12 : level === 4 ? 14 : 16;
+
+  if (password.length < minLength) tips.push(`Слишком короткий. Минимум ${minLength} символов.`);
   if (!/[A-Z]/.test(password)) tips.push('Добавьте заглавную букву.');
   if (!/[a-z]/.test(password)) tips.push('Добавьте строчную букву.');
-  if (!/\d/.test(password)) tips.push('Добавьте цифру.');
-  if (!/[^a-zA-Z0-9]/.test(password)) tips.push('Добавьте спецсимвол (!@#$%).');
+  if ((password.match(/\d/g) ?? []).length < (level >= 2 ? 2 : 1)) tips.push(level >= 2 ? 'Добавьте 2 цифры.' : 'Добавьте цифру.');
+  if ((password.match(/[^a-zA-Z0-9\s]/g) ?? []).length < (level >= 3 ? 2 : 1)) tips.push(level >= 3 ? 'Добавьте 2 спецсимвола.' : 'Добавьте спецсимвол (!@#$%).');
+  if (level >= 5 && password.trim().split(/[\s-]+/).filter(Boolean).length < 4) {
+    tips.push('Попробуйте passphrase из 4 фрагментов или слов.');
+  }
   if (tips.length === 0) tips.push('Отличный пароль! Так держать.');
   return tips;
 }

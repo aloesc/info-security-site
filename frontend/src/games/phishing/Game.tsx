@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useReducer, useEffect } from 'react';
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PHISHING_DATA } from './data';
 import { calculateScore, formatTime } from './logic';
@@ -113,6 +114,15 @@ export default function PhishingGame() {
   return (
     <section className="min-h-screen bg-cyber-black py-12 px-4">
       <div className="mx-auto max-w-4xl">
+        <div className="mb-6">
+          <Link
+            href="/"
+            className="inline-flex items-center rounded-lg border border-cyber-card px-4 py-2 text-sm font-medium text-slate-200 transition-colors hover:bg-cyber-card/60"
+          >
+            ← Главное меню
+          </Link>
+        </div>
+
         <div className="mb-8 text-center">
           <h1 className="text-2xl font-bold text-slate-50 sm:text-3xl">Детектив Фишинга</h1>
           <p className="mt-2 text-sm text-slate-400">

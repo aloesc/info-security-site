@@ -3,6 +3,7 @@ import {
   estimateCrackingTime,
   calculateGameScore,
   getLevelTarget,
+  meetsLevelTarget,
   getPasswordTips,
 } from './logic';
 
@@ -53,8 +54,20 @@ describe('password logic', () => {
     expect(getLevelTarget(99).requiredLevel).toBe('unbreakable');
   });
 
+  test('meetsLevelTarget blocks letters-only passwords', () => {
+    expect(meetsLevelTarget('aaaAAAAA', 1)).toBe(false);
+    expect(meetsLevelTarget('aaaAAAAA1!', 1)).toBe(true);
+  });
+
+  test('meetsLevelTarget requires longer passwords for later levels', () => {
+    expect(meetsLevelTarget('aaaAAAAA11!', 2)).toBe(true);
+    expect(meetsLevelTarget('aaaAAAAA1!', 3)).toBe(false);
+    expect(meetsLevelTarget('Aa23_!pass?unicode_letter?good', 4)).toBe(true);
+    expect(meetsLevelTarget('word1 WORD2!! word3 11 word4@@', 5)).toBe(true);
+  });
+
   test('getPasswordTips', () => {
-    const tips = getPasswordTips('abc');
+    const tips = getPasswordTips('abc', 1);
     expect(tips.some((t) => t.includes('короткий'))).toBe(true);
     expect(tips.some((t) => t.includes('заглавную'))).toBe(true);
   });

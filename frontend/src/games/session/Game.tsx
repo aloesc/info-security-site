@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useReducer, useEffect } from 'react';
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { generateSessions, calculateScore, getGrade, Session } from './logic';
 import SessionList from './SessionList';
@@ -28,6 +29,17 @@ type Action =
   | { type: 'GAME_OVER' }
   | { type: 'RESTART' };
 
+function calculateRoundScore(state: GameState) {
+  const suspicious = state.sessions.filter((s) => s.isSuspicious);
+  const closedSuspicious = suspicious.filter((s) => state.closedIds.has(s.id)).length;
+  const missedSuspicious = suspicious.length - closedSuspicious;
+  const closedLegitimate = state.sessions
+    .filter((s) => !s.isSuspicious)
+    .filter((s) => state.closedIds.has(s.id)).length;
+
+  return calculateScore(closedSuspicious, missedSuspicious, closedLegitimate, state.timeLeft);
+}
+
 function gameReducer(state: GameState, action: Action): GameState {
   switch (action.type) {
     case 'INIT': {
@@ -46,7 +58,11 @@ function gameReducer(state: GameState, action: Action): GameState {
       if (state.isGameOver || state.phase !== 'playing') return state;
       const newTime = state.timeLeft - 1;
       if (newTime <= 0) {
-        return { ...state, timeLeft: 0, phase: 'result' };
+        const nextState = { ...state, timeLeft: 0, phase: 'result' as const };
+        if (state.level >= 5) {
+          return { ...nextState, score: state.score + calculateRoundScore(nextState), isGameOver: true };
+        }
+        return nextState;
       }
       return { ...state, timeLeft: newTime };
     }
@@ -57,7 +73,11 @@ function gameReducer(state: GameState, action: Action): GameState {
         .filter((s) => s.isSuspicious)
         .every((s) => nextClosed.has(s.id));
       if (allSuspiciousClosed) {
-        return { ...state, closedIds: nextClosed, phase: 'result' };
+        const nextState = { ...state, closedIds: nextClosed, phase: 'result' as const };
+        if (state.level >= 5) {
+          return { ...nextState, score: state.score + calculateRoundScore(nextState), isGameOver: true };
+        }
+        return nextState;
       }
       return { ...state, closedIds: nextClosed };
     }
@@ -67,14 +87,24 @@ function gameReducer(state: GameState, action: Action): GameState {
       }
       const nextLevel = state.level + 1;
       const sessions = generateSessions(nextLevel);
+      const roundScore = calculateRoundScore(state);
       return {
         level: nextLevel,
         sessions,
         closedIds: new Set<string>(),
-        score: state.score,
+        score: state.score + roundScore,
         timeLeft: MAX_TIME,
         isGameOver: false,
         phase: 'playing',
+      };
+    }
+    case 'GAME_OVER': {
+      if (state.isGameOver) return state;
+      return {
+        ...state,
+        score: state.score + calculateRoundScore(state),
+        isGameOver: true,
+        phase: 'result',
       };
     }
     case 'RESTART':
@@ -113,16 +143,7 @@ export default function SessionGame() {
 
   useEffect(() => {
     if (state.isGameOver) {
-      const suspicious = state.sessions.filter((s) => s.isSuspicious);
-      const closedSuspicious = suspicious.filter((s) => state.closedIds.has(s.id)).length;
-      const missedSuspicious = suspicious.length - closedSuspicious;
-      const closedLegitimate = state.sessions
-        .filter((s) => !s.isSuspicious)
-        .filter((s) => state.closedIds.has(s.id)).length;
-      const roundScore = calculateScore(closedSuspicious, missedSuspicious, closedLegitimate, state.timeLeft);
-      const totalScore = state.score + roundScore;
-
-      submitScore('session', totalScore).catch(() => {});
+      submitScore('session', state.score).catch(() => {});
     }
   }, [state.isGameOver]);
 
@@ -134,6 +155,15 @@ export default function SessionGame() {
   return (
     <section className="min-h-screen bg-cyber-black py-12 px-4">
       <div className="mx-auto max-w-2xl">
+        <div className="mb-6">
+          <Link
+            href="/"
+            className="inline-flex items-center rounded-lg border border-cyber-card px-4 py-2 text-sm font-medium text-slate-200 transition-colors hover:bg-cyber-card/60"
+          >
+            ← Главное меню
+          </Link>
+        </div>
+
         <div className="mb-8 text-center">
           <h1 className="text-2xl font-bold text-slate-50 sm:text-3xl">Защитник Сессий</h1>
           <p className="mt-2 text-sm text-slate-400">
@@ -178,11 +208,11 @@ export default function SessionGame() {
           )}
         </AnimatePresence>
 
-        {state.isGameOver && (
-          <motion.div
-            variants={fadeInUp}
-            initial="hidden"
-            animate="visible"
+          {state.isGameOver && (
+            <motion.div
+              variants={fadeInUp}
+              initial="hidden"
+              animate="visible"
             className="mt-6 rounded-xl border border-cyber-card bg-cyber-dark/80 p-8 text-center"
           >
             <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-cyber-blue/10">
@@ -196,6 +226,14 @@ export default function SessionGame() {
             >
               Играть снова
             </button>
+            <div className="mt-3">
+              <Link
+                href="/"
+                className="inline-flex items-center justify-center rounded-lg border border-cyber-card px-6 py-3 text-sm font-semibold text-slate-200 transition-colors hover:bg-cyber-card/60"
+              >
+                В главное меню
+              </Link>
+            </div>
           </motion.div>
         )}
       </div>
