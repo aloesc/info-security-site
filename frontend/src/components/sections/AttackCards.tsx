@@ -1,81 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Fish,
-  Smartphone,
-  EyeOff,
-  KeyRound,
-  Users,
-  ChevronDown,
-  ShieldCheck,
-  X,
-} from 'lucide-react';
+import { ChevronDown, ShieldCheck, X } from 'lucide-react';
 import Card from '@/components/ui/Card';
 import { fadeInUp, staggerContainer } from '@/lib/animations';
-
-interface AttackData {
-  id: string;
-  title: string;
-  icon: React.ReactNode;
-  short: string;
-  description: string;
-  mitigation: string;
-}
-
-const ATTACKS: AttackData[] = [
-  {
-    id: 'phishing',
-    title: 'Фишинг',
-    icon: <Fish className="h-6 w-6" />,
-    short: 'Поддельные сайты и ссылки, похищающие данные.',
-    description:
-      'Злоумышленники создают точные копии популярных сайтов или рассылают письма от имени известных сервисов, чтобы выманить логины и пароли.',
-    mitigation:
-      'Всегда проверяйте URL в адресной строке. Не переходите по ссылкам из незнакомых писем. Используйте MFA.',
-  },
-  {
-    id: 'sim-swap',
-    title: 'SIM-свопинг',
-    icon: <Smartphone className="h-6 w-6" />,
-    short: 'Перехват SMS-кодов через подмену SIM-карты.',
-    description:
-      'Атакующие обманывают оператора связи, перенося ваш номер на свою SIM-карту, чтобы получать коды подтверждения и сбрасывать пароли.',
-    mitigation:
-      'Отключите привязку к SMS. Используйте приложения-аутентификаторы (Google Authenticator, Authy). Установите пин-код в салоне связи.',
-  },
-  {
-    id: 'session-hijacking',
-    title: 'Кража сессий',
-    icon: <EyeOff className="h-6 w-6" />,
-    short: 'Перехват сессий через вредоносные расширения или общедоступный Wi-Fi.',
-    description:
-      'Злоумышленники крадут cookie-файлы сессии через вредоносные браузерные расширения или перехватывая трафик в общедоступных Wi-Fi сетях.',
-    mitigation:
-      'Не устанавливайте непроверенные расширения. Не вводите пароли и коды в подозрительных сетях. Регулярно завершайте активные сессии в настройках аккаунта.',
-  },
-  {
-    id: 'brute-force',
-    title: 'Брутфорс',
-    icon: <KeyRound className="h-6 w-6" />,
-    short: 'Подбор паролей по базе утечек.',
-    description:
-      'Атакующие используют базы данных утекших паролей, подбирая комбинации логин/пароль к вашим аккаунтам в автоматическом режиме.',
-    mitigation:
-      'Используйте уникальные длинные пароли для каждого сервиса. Включите двухфакторную аутентификацию. Проверяйте утечки на Have I Been Pwned.',
-  },
-  {
-    id: 'social-engineering',
-    title: 'Социальная инженерия',
-    icon: <Users className="h-6 w-6" />,
-    short: '"Звонки из поддержки" и манипуляции людьми.',
-    description:
-      'Мошенники звонят от имени "службы поддержки" банка или соцсети, выманивая SMS-коды или данные карты под предлогом "взлома" или "блокировки".',
-    mitigation:
-      'Служба поддержки никогда не просит SMS-коды. Сбрасывайте звонок и перезванивайте по официальному номеру. Проверяйте личность собеседника.',
-  },
-];
+import AttackIcon from '@/components/attacks/AttackIcon';
+import { ATTACKS, type AttackData } from '@/content/attacks';
 
 function AttackCard({ item, isExpanded, onToggle, index }: {
   item: AttackData;
@@ -102,7 +34,7 @@ function AttackCard({ item, isExpanded, onToggle, index }: {
         <div className="p-5 sm:p-6">
           <div className="flex items-start justify-between gap-3">
             <div className={`rounded-lg bg-cyber-dark p-2.5 text-cyber-blue`}>
-              {item.icon}
+              <AttackIcon name={item.icon} />
             </div>
             {isExpanded ? (
               <X className="mt-1 h-5 w-5 text-slate-400" />
@@ -129,6 +61,14 @@ function AttackCard({ item, isExpanded, onToggle, index }: {
                     <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-cyber-green" />
                     <p className="text-sm text-slate-300">{item.mitigation}</p>
                   </div>
+
+                  <Link
+                    href={`/attacks/${item.slug}`}
+                    onClick={(e) => e.stopPropagation()}
+                    className="mt-4 inline-flex w-full items-center justify-center rounded-lg bg-cyber-blue px-4 py-2.5 text-sm font-semibold text-cyber-black transition-colors hover:bg-cyber-blue/90"
+                  >
+                    Подробнее
+                  </Link>
                 </div>
               </motion.div>
             )}
@@ -175,11 +115,11 @@ export default function AttackCards() {
         >
           {ATTACKS.map((item, idx) => (
             <AttackCard
-              key={item.id}
+              key={item.slug}
               item={item}
               index={idx}
-              isExpanded={expandedId === item.id}
-              onToggle={() => toggle(item.id)}
+              isExpanded={expandedId === item.slug}
+              onToggle={() => toggle(item.slug)}
             />
           ))}
         </motion.div>
